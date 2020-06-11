@@ -95,7 +95,7 @@ h1 {
 .chat-messages {
   padding: 30px;
   max-height: 500px;
-  overflow-y: hidden;
+  overflow-y: scroll;
   scrollbar-3dlight-color: #909090;
   background-color: #909090;
 }
