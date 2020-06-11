@@ -8,7 +8,12 @@ const socketio = require("socket.io");
 const io = socketio(server);
 const formatMessage = require("./utils/messages");
 const botName = "Mr.Dispatch";
-const { userJoin, getCurrentUser } = require("./utils/users");
+const {
+  userJoin,
+  getCurrentUser,
+  userExit,
+  roomUsers,
+} = require("./utils/users");
 
 // Set Static Folder
 app.use(express.static(path.join(__dirname, "public")));
@@ -32,16 +37,35 @@ io.on("connection", (socket) => {
         "message",
         formatMessage(botName, `${user.username} has joined the room`)
       ); // emit to everyone except the connecting user
+
+    // send users and room info
+    io.to(user.room).emit("roomUsers", {
+      room: user.room,
+      users: roomUsers(user.room),
+    });
   });
 
   // Listen for chat message
   socket.on("chatMessage", (msg) => {
-    io.emit("message", formatMessage("USER", msg));
+    const user = getCurrentUser(socket.id);
+    io.to(user.room).emit("message", formatMessage(user.username, msg));
   });
 
   // Runs when client disconnects
   socket.on("disconnect", () => {
-    io.emit("message", formatMessage(botName, "A user has left the chat"));
+    const user = userExit(socket.id);
+    if (user) {
+      io.to(user.room).emit(
+        "message",
+        formatMessage(botName, `${user.username} has left the room`)
+      );
+
+      // send users and room info
+      io.to(user.room).emit("roomUsers", {
+        room: user.room,
+        users: roomUsers(user.room),
+      });
+    }
   });
 });
 
