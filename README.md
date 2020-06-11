@@ -2,6 +2,9 @@
 ## Dispatch - Realtime Chat application using Node.js and Socket.io
 
 ## App
+The application is deployed on Heroku. Here is the link - https://dispatch-chat-room.herokuapp.com/
+
+## Screenshots
 
 ### 1. Login Page
 
